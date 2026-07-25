@@ -1,15 +1,19 @@
 # backend/main.py
 
+import os
 from typing import Optional, Literal
 
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
 
 from processor import process_image
 
 app = FastAPI()
 
+# No longer strictly needed once frontend+backend share one origin, but
+# harmless to leave — remove later if you want to trim dead config.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -70,3 +74,16 @@ async def compress(
             "Content-Disposition": f'attachment; filename="compressed.{output_format}"',
         },
     )
+
+
+# Absolute path, not "../frontend" directly — deployment platforms don't
+# always launch uvicorn from inside backend/, so resolving relative to
+# this file's own location (not the process's working directory) is what
+# keeps this working regardless of where the start command runs from.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+
+# Must be the LAST thing registered — Starlette matches routes in
+# registration order, and this mounts at "/" which would otherwise
+# catch /compress requests before they reach the route above.
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

@@ -1,6 +1,6 @@
 // frontend/script.js
 
-const API_URL = "http://127.0.0.1:8000/compress";
+const API_URL = "/compress";  // was "http://127.0.0.1:8000/compress"
 
 const form = document.getElementById("compress-form");
 const errorMessage = document.getElementById("error-message");
