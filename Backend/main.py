@@ -81,7 +81,7 @@ async def compress(
 # this file's own location (not the process's working directory) is what
 # keeps this working regardless of where the start command runs from.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "Frontend")  # was "frontend"
 
 # Must be the LAST thing registered — Starlette matches routes in
 # registration order, and this mounts at "/" which would otherwise
